@@ -8,14 +8,14 @@ from random import random, choice, randint, getrandbits
 
 M_PI   = pi
 M_PI_2 = pi / 2.0
-
 moving = False
 B = 8 #bredth
 H = 5 #length
 HEIGHT = 800
 WIDTH = 1200
-pieces = [ [537.0515,355.2442, 34.5539, 1,1,1],[142.6052,216.9133, 34.5539,1,0,0] ]
+pieces = [ [142.6052,216.9133, 34.5539, 1,0,0] ]
 gamePieces = []
+SELECTEDPIECE = None
 
 # define plane object
 class square(object):
@@ -31,7 +31,6 @@ class square(object):
 	def draw(self):
 
 		glPushMatrix()
-		print self.x, self.y
 		glTranslatef(self.x, self.y, self.z)
 		glScalef( 0.5, 0.5, 0.1)
 
@@ -78,26 +77,40 @@ class gamePiece(object):
 		self.red   = r
 		self.green = g
 		self.blue  = b
+		self.rad = rad
 		self.x = .4
 		self.y = -3.9
 		self.z = -4
 		self.selected = False
 
-	def selectPiece(self):
+	def select(self):
 		self.selected = True
+
+	def deselect(self):
+		self.selected = False
+
+	def inMe(self,x,y):
+		if((x-self.x)**2 + (y-self.y)**2 < self.rad**2):
+			return True
+		else:
+			return False
 
 	def movePiece(self, newX, newY):
 		self.x = newX
 		self.y = newY
 
-	def draw(self):
+	def draw(self):	
 		glPushMatrix()
+		if(self.selected):
+			glColor3f(0, 1.0, 0)
+		else:
+			glColor3f(0.0, 0.0, 0.0)
+
 		glTranslatef(self.x, self.y, self.z)
 		glTranslatef(0.0, 5.0, -1.0)
 		glScalef(1.0, 1.0, 2.0)
-		glColor3f(0, 1.0, 0)
 		quadratic = gluNewQuadric()
-		gluDisk(quadratic,0,.5,32,32)
+		gluDisk(quadratic,0,.35,32,32)
 		glPopMatrix()
 
 # create list of planes
@@ -113,7 +126,6 @@ def makeBoard():
 		x = -int(B/2)
 
 		for j in range(B):
-			print x,y
 			board[i][j].x = x
 			board[i][j].y = y
 			if (x + int(odd)) % 2  == 0:
@@ -150,20 +162,7 @@ def draw():
 def resize(w,h):
 	HEIGHT = h
 	WIDTH = w
-
-
-#define choice of planes to animate
-def tick():
-	for i in range(MAX_PLANES) :
-		if (planes[i].speed != 0.0) :
-			tick_per_plane(i)
-	return
-
-# define animator so that motion can be started
-def animate():
-	tick()
-	glutPostRedisplay()
-	return
+	draw()
 
 
 def visible(state):
@@ -179,37 +178,39 @@ def visible(state):
 # ARGSUSED1
 
 def keyboard( ch,  x,  y):
-	if(ch == ' ') :
-		if (not moving) :
-			tick()
-			glutPostRedisplay()
-	elif (ch == chr(27)) :
+	global SELECTEDPIECE
+	if (ch == chr(27)) :
 		sys.exit(0)
-	return 0
+	if(SELECTEDPIECE is not None):
+		if(ch == 'w'):
+			SELECTEDPIECE.y += 0.05
+		if(ch == 's'):
+			SELECTEDPIECE.y -= 0.05
+		if(ch == 'd'):
+			SELECTEDPIECE.x += 0.05
+		if(ch == 'a'):
+			SELECTEDPIECE.x -= 0.05
+	else:
+		return
+	draw()
 
-VOID, ADD_PLANE, MOTION_ON, MOTION_OFF, QUIT = range(5)
+def findPiece(x,y):
+	for i in range(len(gamePieces)):
+		if(gamePieces[i].inMe(x,y)):
+			gamePieces[i].select()
+			return gamePieces[i]
 
-def domotion_on():
-	moving = GL_TRUE
-	glutChangeToMenuEntry(3, "Motion off", MOTION_OFF)
-	glutIdleFunc(animate)
-	return
+def mouse(button, state,  x,  y):
+	global SELECTEDPIECE
+	if(button == 0 and state == 1):
+		piece = findPiece(x,y)
+		if(piece is not None):
+			SELECTEDPIECE = piece
+	if(button == 2 and state == 1):
+		SELECTEDPIECE.deselect()
+		SELECTEDPIECE = None
+	draw()
 
-def domotion_off():
-	moving = GL_FALSE
-	glutChangeToMenuEntry(3, "Motion", MOTION_ON)
-	glutIdleFunc(None)
-	return
-
-def doquit():
-	sys.exit(0)
-	return
-
-
-menudict ={QUIT : doquit}
-def dmenu(item):
-	menudict[item]()
-	return 0
 
 if __name__ == "__main__":
 	glutInit(['glutplane'])
@@ -224,20 +225,12 @@ if __name__ == "__main__":
 	glutKeyboardFunc(keyboard)
 	glutVisibilityFunc(visible)
 	glutReshapeFunc(resize)
-
-	#
-	# RIGHT-CLICK to display the menu
-	#
-	glutCreateMenu(dmenu)
-	glutAddMenuEntry("Quit", QUIT)
-	glutAttachMenu(GLUT_RIGHT_BUTTON)
+	glutMouseFunc(mouse)
 
 	# setup OpenGL state
-	glClearDepth(1.0)
 	glClearColor(1.0, 1.0, 1.0, 0.0)
 	glMatrixMode(GL_PROJECTION)
-	glFrustum(-1.0, 1.0, -1.0, 1.0, 1.0, 30)
-	glMatrixMode(GL_MODELVIEW)
+	glFrustum(-1.0, 1.0, -1.0, 1.0, 1.0, 10)
 	# add three initial random planes
 	# start event processing */
 	#Create the board
