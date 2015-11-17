@@ -30,7 +30,10 @@ HEIGHT = 800
 WIDTH = 1200
 piecePointer = 0
 
-# define plane object
+# 
+# TILE CLASS
+# Class used to save data for each tile and a function to draw a tile 
+#
 class tile(object):
 	def __init__(self, red, green, blue, x, y, z):
 		self.red   = red
@@ -48,8 +51,9 @@ class tile(object):
 		glTranslatef(self.x, self.y, self.z)
 		glScalef( 0.5, 0.5, 0.2)
 
-
-		#Top
+		#
+		#The vertixes that define a simple cube. Grouped by four. Each group defines a square.
+		#
 		glBegin(GL_QUADS)
 		glColor3f(float(self.red)/255*0.7, float(self.green)/255*0.7, float(self.blue)/255*0.7)
 		glVertex3f( 1.0, 1.0,-1.0)
@@ -89,8 +93,10 @@ class tile(object):
 		glEnd()
 		glPopMatrix()
 
-
-# define a game piece
+#
+# GAME-PIECE CLASS
+# Contains data and methods to draw, select and move pieces
+#
 class gamePiece(object):
 	def __init__(self, x,y,rad,r,g,b):
 		self.red   = r
@@ -102,8 +108,6 @@ class gamePiece(object):
 		self.z = -5
 		self.selected = False
 		print self.x, x, self.y, y
-
-
 
 	def select(self):
 		self.selected = True
@@ -147,7 +151,8 @@ class gamePiece(object):
 		gluDisk(quadratic,0,self.rad,32,32)
 		glPopMatrix()
 
-# create list of planes
+#
+# Creade a 2D array of Tiles
 #
 board = [[(tile(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)) for x in range(B)] for y in range(H)]
 
@@ -191,12 +196,17 @@ def draw():
 		
 	glutSwapBuffers()
 	return
-
+#
+# Define resize finction
+#
 
 def resize(w,h):
 	HEIGHT = h
 	WIDTH = w
 	draw()
+#
+# Define resize finction
+#
 
 def popPiece():
 	global piecePointer
