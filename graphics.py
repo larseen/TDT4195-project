@@ -6,23 +6,28 @@ from OpenGL.GL import *
 from math import *
 from random import random, choice, randint, getrandbits
 
-M_PI   = pi
-M_PI_2 = pi / 2.0
-moving = False
+
+
+### DATA GENERATED FROM MATLAB
+
+boardColurs = [[210,79,66],[74,110,145]]
+
+pieces = [
+	[140.575579012684,330.585020962471,36.1654768404031,246,239,220],
+	[548.834948975566,238.044696946200,35.7943337765257,238,229,212],
+	[237.248082927155,140.100965293905,35.2164543487218,156,11,23],
+	[428.783860704430,135.137817610981,35.2823678533650,217,212,193],
+	[352.412787048160,244.258137126295,35.9556412541358,164,7,26]
+]
+
+### GLOBALS
+
+gamePieces = []
+SELECTEDPIECE = None
 B = 8 #bredth
 H = 5 #length
 HEIGHT = 800
 WIDTH = 1200
-#The pices to be places. [x,y,rad,r,g,b]
-pieces = [
-	[537.051523513223,355.244173597710,34.5538710367623,111,1,10],
-	[142.605224091665,216.913254859790,36.4234107772852,214,198,183],
-	[242.172979113019,252.830271177577,36.7846671150205,212,194,180],
-	[541.526026882741,152.001818337356,35.9156207592183,201,185,170],
-	[347.794065497258,242.810807547300,34.7768420203598,138,2,17]
-]
-gamePieces = []
-SELECTEDPIECE = None
 
 # define plane object
 class square(object):
@@ -45,7 +50,7 @@ class square(object):
 
 		#Top
 		glBegin(GL_QUADS)
-		glColor3f(self.red*0.7, self.green*0.7, self.blue*0.7)
+		glColor3f(float(self.red)/255*0.7, float(self.green)/255*0.7, float(self.blue)/255*0.7)
 		glVertex3f( 1.0, 1.0,-1.0)
 		glVertex3f(-1.0, 1.0,-1.0)
 		glVertex3f(-1.0, 1.0, 1.0)
@@ -57,13 +62,13 @@ class square(object):
 		glVertex3f(-1.0,-1.0,-1.0)
 		glVertex3f( 1.0,-1.0,-1.0) 
 
-		glColor3f(self.red, self.green, self.blue)
+		glColor3f(float(self.red)/255, float(self.green)/255, float(self.blue)/255)
 		glVertex3f( 1.0, 1.0, 1.0)
 		glVertex3f(-1.0, 1.0, 1.0)
 		glVertex3f(-1.0,-1.0, 1.0)
 		glVertex3f( 1.0,-1.0, 1.0)
 
-		glColor3f(self.red*0.7, self.green*0.7, self.blue*0.7)
+		glColor3f(float(self.red)/255*0.7, float(self.green)/255*0.7, float(self.blue)/255*0.7)
 		glVertex3f( 1.0,-1.0,-1.0)
 		glVertex3f(-1.0,-1.0,-1.0)
 		glVertex3f(-1.0, 1.0,-1.0)
@@ -126,8 +131,8 @@ class gamePiece(object):
 		glTranslatef(self.x, self.y, self.z)
 		glScalef(1.0, 1.0, 2.0)
 		quadratic = gluNewQuadric()
-		gluDisk(quadratic,0,.34,32,32)
-		gluCylinder(quadratic,.34,.34,0.1,200,200)
+		gluDisk(quadratic,0,self.rad,32,32)
+		gluCylinder(quadratic,self.rad,self.rad,0.1,200,200)
 		glPopMatrix()
 
 # create list of planes
@@ -144,9 +149,13 @@ def makeBoard():
 			board[i][j].x = j
 			board[i][j].y = y
 			if (j + int(odd)) % 2  == 0:
-				board[i][j].blue = 1.0
+				board[i][j].red = boardColurs[0][0]
+				board[i][j].green = boardColurs[0][1]
+				board[i][j].blue = boardColurs[0][2]
 			else:
-				board[i][j].red = 1.0
+				board[i][j].red = boardColurs[1][0]
+				board[i][j].green = boardColurs[1][1]
+				board[i][j].blue = boardColurs[1][2]
 		y -= 1
 
 
@@ -176,16 +185,6 @@ def resize(w,h):
 	HEIGHT = h
 	WIDTH = w
 	draw()
-
-
-def visible(state):
-	if (state == GLUT_VISIBLE) :
-		if (moving) :
-			glutIdleFunc(animate)
-	else :
-		if (moving) :
-			glutIdleFunc(None)
-	return
 
 
 # ARGSUSED1
@@ -239,7 +238,6 @@ if __name__ == "__main__":
 	glutCreateWindow(wintitle)
 	glutDisplayFunc(draw)
 	glutKeyboardFunc(keyboard)
-	glutVisibilityFunc(visible)
 	glutReshapeFunc(resize)
 	glutMouseFunc(mouse)
 
@@ -253,8 +251,9 @@ if __name__ == "__main__":
 	glTranslatef(-3.5, 11.2, 1.0)
 	# add three initial random planes
 	# start event processing */
-	#Create the board
+	# CREATE PIECES
 	makeBoard()
+	# CREATE PIECES
 	for i in range(len(pieces)):
 		gamePieces.append(gamePiece(pieces[i][0],pieces[i][1],pieces[i][2],pieces[i][3],pieces[i][4],pieces[i][5]))
 	print len(pieces)
