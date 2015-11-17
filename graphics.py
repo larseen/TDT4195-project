@@ -10,9 +10,9 @@ from random import random, choice, randint, getrandbits
 
 ### DATA GENERATED FROM MATLAB
 
-boardColurs = [[210,79,66],[74,110,145]]
+inputBoard = [[210,79,66],[74,110,145]]
 
-pieces = [
+inputPieces = [
 	[140.575579012684,330.585020962471,36.1654768404031,246,239,220],
 	[548.834948975566,238.044696946200,35.7943337765257,238,229,212],
 	[237.248082927155,140.100965293905,35.2164543487218,156,11,23],
@@ -22,15 +22,16 @@ pieces = [
 
 ### GLOBALS
 
-gamePieces = []
+pieces = []
 SELECTEDPIECE = None
 B = 8 #bredth
 H = 5 #length
 HEIGHT = 800
 WIDTH = 1200
+piecePointer = 0
 
 # define plane object
-class square(object):
+class tile(object):
 	def __init__(self, red, green, blue, x, y, z):
 		self.red   = red
 		self.green = green
@@ -131,13 +132,24 @@ class gamePiece(object):
 		glTranslatef(self.x, self.y, self.z)
 		glScalef(1.0, 1.0, 2.0)
 		quadratic = gluNewQuadric()
-		gluDisk(quadratic,0,self.rad,32,32)
 		gluCylinder(quadratic,self.rad,self.rad,0.1,200,200)
+		glPopMatrix()
+
+		glPushMatrix()
+		if(self.selected):
+			glColor3f(float(self.red)/355, float(self.green)/355, float(self.blue)/355)
+		else:
+			glColor3f(float(self.red)/255, float(self.green)/255, float(self.blue)/255)
+
+		glTranslatef(self.x, self.y, self.z+.2)
+		glScalef(1.0, 1.0, 2.0)
+		quadratic = gluNewQuadric()
+		gluDisk(quadratic,0,self.rad,32,32)
 		glPopMatrix()
 
 # create list of planes
 #
-board = [[(square(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)) for x in range(B)] for y in range(H)]
+board = [[(tile(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)) for x in range(B)] for y in range(H)]
 
 # Inits the board tiles, with posistion and color.
 def makeBoard():
@@ -149,13 +161,13 @@ def makeBoard():
 			board[i][j].x = j
 			board[i][j].y = y
 			if (j + int(odd)) % 2  == 0:
-				board[i][j].red = boardColurs[0][0]
-				board[i][j].green = boardColurs[0][1]
-				board[i][j].blue = boardColurs[0][2]
+				board[i][j].red = inputBoard[0][0]
+				board[i][j].green = inputBoard[0][1]
+				board[i][j].blue = inputBoard[0][2]
 			else:
-				board[i][j].red = boardColurs[1][0]
-				board[i][j].green = boardColurs[1][1]
-				board[i][j].blue = boardColurs[1][2]
+				board[i][j].red = inputBoard[1][0]
+				board[i][j].green = inputBoard[1][1]
+				board[i][j].blue = inputBoard[1][2]
 		y -= 1
 
 
@@ -174,24 +186,38 @@ def draw():
 	for i in range(H):
 		for j in range(B):
 			board[i][j].draw()
-	for i in range(len(gamePieces)):
-		gamePieces[i].draw()
+	for i in range(len(pieces)):
+		pieces[i].draw()
 		
 	glutSwapBuffers()
 	return
 
-#define choice of planes to animate
+
 def resize(w,h):
 	HEIGHT = h
 	WIDTH = w
 	draw()
 
-
-# ARGSUSED1
+def popPiece():
+	global piecePointer
+	returnPiece = pieces[piecePointer]
+	piecePointer += 1
+	if(piecePointer == len(pieces)):
+		piecePointer = 0
+	return returnPiece
 
 def keyboard( ch,  x,  y):
 	global SELECTEDPIECE
-	if (ch == chr(27)) :
+	if (ch == chr(32)):
+		SELECTEDPIECE.deselect();
+		SELECTEDPIECE = None; 
+	if (ch == chr(9)):
+		if(SELECTEDPIECE is not None):
+			SELECTEDPIECE.deselect()
+			SELECTEDPIECE = None
+		SELECTEDPIECE = popPiece()
+		SELECTEDPIECE.select()
+	if (ch == chr(27)):
 		sys.exit(0)
 	if(SELECTEDPIECE is not None):
 		if(ch == 'w'):
@@ -202,28 +228,6 @@ def keyboard( ch,  x,  y):
 			SELECTEDPIECE.x += 0.05
 		if(ch == 'a'):
 			SELECTEDPIECE.x -= 0.05
-	else:
-		return
-	draw()
-
-def findPiece(x,y):
-	for i in range(len(gamePieces)):
-		if(gamePieces[i].inMe(x,y)):
-			gamePieces[i].select()
-			return gamePieces[i]
-
-def mouse(button, state,  x,  y):
-	transformedX = (x)/120
-	transformedY = -(y)/120
-	print transformedX, transformedY
-	global SELECTEDPIECE
-	if(button == 0 and state == 1):
-		piece = findPiece(x,y)
-		if(piece is not None):
-			SELECTEDPIECE = piece
-	if(button == 2 and state == 1):
-		SELECTEDPIECE.deselect()
-		SELECTEDPIECE = None
 	draw()
 
 
@@ -239,7 +243,6 @@ if __name__ == "__main__":
 	glutDisplayFunc(draw)
 	glutKeyboardFunc(keyboard)
 	glutReshapeFunc(resize)
-	glutMouseFunc(mouse)
 
 	# setup OpenGL state
 	glClearColor(1.0, 1.0, 1.0, 0.0)
@@ -254,7 +257,6 @@ if __name__ == "__main__":
 	# CREATE PIECES
 	makeBoard()
 	# CREATE PIECES
-	for i in range(len(pieces)):
-		gamePieces.append(gamePiece(pieces[i][0],pieces[i][1],pieces[i][2],pieces[i][3],pieces[i][4],pieces[i][5]))
-	print len(pieces)
+	for i in range(len(inputPieces)):
+		pieces.append(gamePiece(inputPieces[i][0],inputPieces[i][1],inputPieces[i][2],inputPieces[i][3],inputPieces[i][4],inputPieces[i][5]))
 	glutMainLoop()
