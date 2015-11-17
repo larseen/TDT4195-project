@@ -8,7 +8,7 @@ function [outputPieces, outputBoard] = task1()
     
     % Read inn the image, and spereta the channels to be able to catch all
     % the game pices
-    I = imread('image1.png');
+    I = imread('image3.png');
     I_red = I(:,:,1);
     I_green = I(:,:,2);
     I_blue = I(:,:,3);

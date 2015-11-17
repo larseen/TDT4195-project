@@ -1,12 +1,9 @@
 import sys
-
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 from OpenGL.GL import *
 from math import *
 from random import random, choice, randint, getrandbits
-
-
 
 ### DATA GENERATED FROM MATLAB
 
@@ -107,19 +104,12 @@ class gamePiece(object):
 		self.y = -(y)/120 -1.4
 		self.z = -5
 		self.selected = False
-		print self.x, x, self.y, y
 
 	def select(self):
 		self.selected = True
 
 	def deselect(self):
 		self.selected = False
-
-	def inMe(self,x,y):
-		if((x-self.x)**2 + (y-self.y)**2 < self.rad**2):
-			return True
-		else:
-			return False
 
 	def movePiece(self, newX, newY):
 		self.x = newX
@@ -179,6 +169,7 @@ def makeBoard():
 #
 # define the GLUT display function
 #
+
 def draw():
 	glViewport(0, 0, WIDTH, HEIGHT)
 	glClear(GL_DEPTH_BUFFER_BIT)
@@ -191,11 +182,14 @@ def draw():
 	for i in range(H):
 		for j in range(B):
 			board[i][j].draw()
+
 	for i in range(len(pieces)):
 		pieces[i].draw()
 		
 	glutSwapBuffers()
+	
 	return
+
 #
 # Define resize finction
 #
@@ -204,6 +198,7 @@ def resize(w,h):
 	HEIGHT = h
 	WIDTH = w
 	draw()
+
 #
 # popPiece - Returns the next piece to be selected
 #
@@ -215,6 +210,7 @@ def popPiece():
 	if(piecePointer == len(pieces)):
 		piecePointer = 0
 	return returnPiece
+
 #
 # Define the GLUT keyboard function. Called with each user-input.
 #
@@ -241,6 +237,7 @@ def keyboard( ch,  x,  y):
 		if(ch == 'a'):
 			SELECTEDPIECE.x -= 0.05
 	draw()
+
 #
 # main
 #
