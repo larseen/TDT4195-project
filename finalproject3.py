@@ -13,7 +13,8 @@ B = 8 #bredth
 H = 5 #length
 HEIGHT = 800
 WIDTH = 1200
-pieces = [ [142.6052,216.9133, 634.5539, 1,0,0] ]
+#The pices to be places. [x,y,rad,r,g,b]
+pieces = [ [142.6052,216.9133, 34.5539, 1,0,0] ]
 gamePieces = []
 SELECTEDPIECE = None
 
@@ -31,6 +32,7 @@ class square(object):
 	def draw(self):
 
 		glPushMatrix()
+		print(self.x, self.y, self.z)
 		glTranslatef(self.x, self.y, self.z)
 		glScalef( 0.5, 0.5, 0.2)
 
@@ -82,11 +84,13 @@ class gamePiece(object):
 		self.red   = r
 		self.green = g
 		self.blue  = b
-		self.rad = rad
-		self.x = .4
-		self.y = -8.9
-		self.z = -4
+		self.rad = rad/100
+		self.x = (x)/100-4
+		self.y = (y)/100-5
+		self.z = -5
 		self.selected = False
+
+
 
 	def select(self):
 		self.selected = True
@@ -104,16 +108,17 @@ class gamePiece(object):
 		self.x = newX
 		self.y = newY
 
-	def draw(self):	
+	def draw(self):
+
 		glPushMatrix()
 		if(self.selected):
-			glColor3f(0, 1.0, 0)
+			glColor3f(self.red*0.9, self.green*0.9, self.blue)
 		else:
-			glColor3f(0.0, 0.0, 0.0)
+			glColor3f(self.red*0.7, self.green*0.7, self.blue*0.7)
 
-		
+		print(self.x, self.y, self.z)
 		glTranslatef(self.x, self.y, self.z)
-		glTranslatef(0.0, 5.0, -1.0)
+		#glTranslatef(0.0, 5.0, -1.0)
 		glScalef(1.0, 1.0, 2.0)
 		quadratic = gluNewQuadric()
 		gluDisk(quadratic,0,.34,32,32)
