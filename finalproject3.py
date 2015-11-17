@@ -19,38 +19,35 @@ gamePieces = []
 
 # define plane object
 class square(object):
-	def __init__(self, red, green, blue, theta, x, y, z, angle = 45):
+	def __init__(self, red, green, blue, x, y, z):
 		self.red   = red
 		self.green = green
 		self.blue  = blue
-		self.theta = theta
-		self.angle = angle
 		self.x = x
 		self.y = y
-		self.z = z
+		self.z = -6
+		self.w = 100
+		self.h = 100
 	def draw(self):
+
 		glPushMatrix()
+		print self.x, self.y
 		glTranslatef(self.x, self.y, self.z)
-		glRotatef(0.0, 0.0, 0.0, 0.0)
-		glScalef(1.0 /2.0, 1.0 / 2.0, 1.0 / 2.0)
-		glTranslatef(0.0, 5.0, -1.0)
-		glBegin(GL_QUADS)
+		glScalef( 0.5, 0.5, 0.1)
 
-		# left wing
-		red =  self.red
-		blue = self.blue
-		green = self.green
-		glColor3f(red, green, blue)
+
 		#Top
+		glBegin(GL_QUADS)
+		glColor3f(self.red, self.green, self.blue)
 		glVertex3f( 1.0, 1.0,-1.0)
 		glVertex3f(-1.0, 1.0,-1.0)
 		glVertex3f(-1.0, 1.0, 1.0)
-		glVertex3f( 1.0, 1.0, 1.0)
+		glVertex3f( 1.0, 1.0, 1.0) 
 
 		glVertex3f( 1.0,-1.0, 1.0)
 		glVertex3f(-1.0,-1.0, 1.0)
 		glVertex3f(-1.0,-1.0,-1.0)
-		glVertex3f( 1.0,-1.0,-1.0)
+		glVertex3f( 1.0,-1.0,-1.0) 
 
 		glVertex3f( 1.0, 1.0, 1.0)
 		glVertex3f(-1.0, 1.0, 1.0)
@@ -62,12 +59,12 @@ class square(object):
 		glVertex3f(-1.0, 1.0,-1.0)
 		glVertex3f( 1.0, 1.0,-1.0)
 
-		glVertex3f(-1.0, 1.0, 1.0)
+		glVertex3f(-1.0, 1.0, 1.0) 
 		glVertex3f(-1.0, 1.0,-1.0)
-		glVertex3f(-1.0,-1.0,-1.0)
-		glVertex3f(-1.0,-1.0, 1.0)
+		glVertex3f(-1.0,-1.0,-1.0) 
+		glVertex3f(-1.0,-1.0, 1.0) 
 
-		glVertex3f( 1.0, 1.0,-1.0)
+		glVertex3f( 1.0, 1.0,-1.0) 
 		glVertex3f( 1.0, 1.0, 1.0)
 		glVertex3f( 1.0,-1.0, 1.0)
 		glVertex3f( 1.0,-1.0,-1.0)
@@ -97,44 +94,15 @@ class gamePiece(object):
 		glPushMatrix()
 		glTranslatef(self.x, self.y, self.z)
 		glTranslatef(0.0, 5.0, -1.0)
-		glScalef(1.0, 1.0, 1.0)
-		glBegin(GL_QUADS)
+		glScalef(1.0, 1.0, 2.0)
 		glColor3f(0, 1.0, 0)
-		glVertex3f( 1.0, 1.0,-1.0)
-		glVertex3f(-1.0, 1.0,-1.0)
-		glVertex3f(-1.0, 1.0, 1.0)
-		glVertex3f( 1.0, 1.0, 1.0)
-
-		glVertex3f( 1.0,-1.0, 1.0)
-		glVertex3f(-1.0,-1.0, 1.0)
-		glVertex3f(-1.0,-1.0,-1.0)
-		glVertex3f( 1.0,-1.0,-1.0)
-
-		glVertex3f( 1.0, 1.0, 1.0)
-		glVertex3f(-1.0, 1.0, 1.0)
-		glVertex3f(-1.0,-1.0, 1.0)
-		glVertex3f( 1.0,-1.0, 1.0)
-
-		glVertex3f( 1.0,-1.0,-1.0)
-		glVertex3f(-1.0,-1.0,-1.0)
-		glVertex3f(-1.0, 1.0,-1.0)
-		glVertex3f( 1.0, 1.0,-1.0)
-
-		glVertex3f(-1.0, 1.0, 1.0)
-		glVertex3f(-1.0, 1.0,-1.0)
-		glVertex3f(-1.0,-1.0,-1.0)
-		glVertex3f(-1.0,-1.0, 1.0)
-
-		glVertex3f( 1.0, 1.0,-1.0)
-		glVertex3f( 1.0, 1.0, 1.0)
-		glVertex3f( 1.0,-1.0, 1.0)
-		glVertex3f( 1.0,-1.0,-1.0)
-		glEnd()
+		quadratic = gluNewQuadric()
+		gluDisk(quadratic,0,.5,32,32)
 		glPopMatrix()
 
 # create list of planes
 #
-board = [[(square(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)) for x in range(B)] for y in range(H)]
+board = [[(square(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)) for x in range(B)] for y in range(H)]
 
 # Inits the board tiles, with posistion and color.
 def makeBoard():
@@ -148,7 +116,6 @@ def makeBoard():
 			print x,y
 			board[i][j].x = x
 			board[i][j].y = y
-			board[i][j].z = - 5
 			if (x + int(odd)) % 2  == 0:
 				board[i][j].blue = 1.0
 			else:
@@ -247,11 +214,11 @@ def dmenu(item):
 if __name__ == "__main__":
 	glutInit(['glutplane'])
 	glutInitWindowPosition(112, 84)
-	glutInitWindowSize(1200, 800)
+	glutInitWindowSize(WIDTH, HEIGHT)
 
 	# use multisampling if available
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH | GLUT_MULTISAMPLE)
-	wintitle = "glutplane  Copyright (c) Mark J. Kilgard, 1994. RIGHT-CLICK for menu"
+	wintitle = "TDT4195 - Project"
 	glutCreateWindow(wintitle)
 	glutDisplayFunc(draw)
 	glutKeyboardFunc(keyboard)
