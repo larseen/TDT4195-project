@@ -205,7 +205,7 @@ def resize(w,h):
 	WIDTH = w
 	draw()
 #
-# Define resize finction
+# popPiece - Returns the next piece to be selected
 #
 
 def popPiece():
@@ -215,7 +215,9 @@ def popPiece():
 	if(piecePointer == len(pieces)):
 		piecePointer = 0
 	return returnPiece
-
+#
+# Define the GLUT keyboard function. Called with each user-input.
+#
 def keyboard( ch,  x,  y):
 	global SELECTEDPIECE
 	if (ch == chr(32)):
@@ -239,7 +241,9 @@ def keyboard( ch,  x,  y):
 		if(ch == 'a'):
 			SELECTEDPIECE.x -= 0.05
 	draw()
-
+#
+# main
+#
 
 if __name__ == "__main__":
 	glutInit(['glutplane'])
@@ -254,7 +258,7 @@ if __name__ == "__main__":
 	glutKeyboardFunc(keyboard)
 	glutReshapeFunc(resize)
 
-	# setup OpenGL state
+	# setup OpenGL state and view
 	glClearColor(1.0, 1.0, 1.0, 0.0)
 	glMatrixMode(GL_PROJECTION)
 	glFrustum(-1.0, 1.0, -1.0, 1.0, 1.2, 50)
@@ -262,9 +266,9 @@ if __name__ == "__main__":
 	glMatrixMode(GL_MODELVIEW)
 	glRotatef(-90.0, 0.0, 0.0, 0.0)
 	glTranslatef(-3.5, 11.2, 1.0)
-	# add three initial random planes
-	# start event processing */
-	# CREATE PIECES
+
+
+	# Initialize tile- values 
 	makeBoard()
 	# CREATE PIECES
 	for i in range(len(inputPieces)):
