@@ -13,7 +13,7 @@ moving = False
 B = 8 #bredth
 H = 5 #length
 HEIGHT = 800
-WIDTH = 1200
+WIDTH = 1400
 pieces = [ [537.0515,355.2442, 34.5539, 1,1,1],[142.6052,216.9133, 34.5539,1,0,0] ]
 gamePieces = []
 
@@ -31,9 +31,8 @@ class square(object):
 	def draw(self):
 
 		glPushMatrix()
-		print self.x, self.y
 		glTranslatef(self.x, self.y, self.z)
-		glScalef( 0.5, 0.5, 0.1)
+		glScalef( 0.5, 0.5, 0.2)
 
 
 		#Top
@@ -43,27 +42,32 @@ class square(object):
 		glVertex3f(-1.0, 1.0,-1.0)
 		glVertex3f(-1.0, 1.0, 1.0)
 		glVertex3f( 1.0, 1.0, 1.0) 
-
+		
+		glColor3f(self.red*0.7, self.green*0.7, self.blue*0.7)
 		glVertex3f( 1.0,-1.0, 1.0)
 		glVertex3f(-1.0,-1.0, 1.0)
 		glVertex3f(-1.0,-1.0,-1.0)
 		glVertex3f( 1.0,-1.0,-1.0) 
 
+		glColor3f(self.red, self.green, self.blue)
 		glVertex3f( 1.0, 1.0, 1.0)
 		glVertex3f(-1.0, 1.0, 1.0)
 		glVertex3f(-1.0,-1.0, 1.0)
 		glVertex3f( 1.0,-1.0, 1.0)
 
+		
 		glVertex3f( 1.0,-1.0,-1.0)
 		glVertex3f(-1.0,-1.0,-1.0)
 		glVertex3f(-1.0, 1.0,-1.0)
 		glVertex3f( 1.0, 1.0,-1.0)
 
+		
 		glVertex3f(-1.0, 1.0, 1.0) 
 		glVertex3f(-1.0, 1.0,-1.0)
 		glVertex3f(-1.0,-1.0,-1.0) 
 		glVertex3f(-1.0,-1.0, 1.0) 
 
+		
 		glVertex3f( 1.0, 1.0,-1.0) 
 		glVertex3f( 1.0, 1.0, 1.0)
 		glVertex3f( 1.0,-1.0, 1.0)
@@ -236,8 +240,11 @@ if __name__ == "__main__":
 	glClearDepth(1.0)
 	glClearColor(1.0, 1.0, 1.0, 0.0)
 	glMatrixMode(GL_PROJECTION)
-	glFrustum(-1.0, 1.0, -1.0, 1.0, 1.0, 30)
+	glFrustum(-1.0, 1.0, -1.0, 1.0, 1.2, 50)
+	model = glGetDoublev(GL_MODELVIEW_MATRIX)
 	glMatrixMode(GL_MODELVIEW)
+	glRotatef(-90.0, 0.0, 0.0, 0.0)
+	glTranslatef(.5, 11.2, 1.0)
 	# add three initial random planes
 	# start event processing */
 	#Create the board
