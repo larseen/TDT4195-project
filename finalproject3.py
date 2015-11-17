@@ -14,7 +14,13 @@ H = 5 #length
 HEIGHT = 800
 WIDTH = 1200
 #The pices to be places. [x,y,rad,r,g,b]
-pieces = [ [142.6052,216.9133, 34.5539, 1,0,0] ]
+pieces = [
+	[537.051523513223,355.244173597710,34.5538710367623,111,1,10],
+	[142.605224091665,216.913254859790,36.4234107772852,214,198,183],
+	[242.172979113019,252.830271177577,36.7846671150205,212,194,180],
+	[541.526026882741,152.001818337356,35.9156207592183,201,185,170],
+	[347.794065497258,242.810807547300,34.7768420203598,138,2,17]
+]
 gamePieces = []
 SELECTEDPIECE = None
 
@@ -32,20 +38,20 @@ class square(object):
 	def draw(self):
 
 		glPushMatrix()
-		print(self.x, self.y, self.z)
+
 		glTranslatef(self.x, self.y, self.z)
 		glScalef( 0.5, 0.5, 0.2)
 
 
 		#Top
 		glBegin(GL_QUADS)
-		glColor3f(self.red, self.green, self.blue)
+		glColor3f(self.red*0.7, self.green*0.7, self.blue*0.7)
 		glVertex3f( 1.0, 1.0,-1.0)
 		glVertex3f(-1.0, 1.0,-1.0)
 		glVertex3f(-1.0, 1.0, 1.0)
 		glVertex3f( 1.0, 1.0, 1.0) 
 		
-		glColor3f(self.red*0.7, self.green*0.7, self.blue*0.7)
+		
 		glVertex3f( 1.0,-1.0, 1.0)
 		glVertex3f(-1.0,-1.0, 1.0)
 		glVertex3f(-1.0,-1.0,-1.0)
@@ -57,7 +63,7 @@ class square(object):
 		glVertex3f(-1.0,-1.0, 1.0)
 		glVertex3f( 1.0,-1.0, 1.0)
 
-		
+		glColor3f(self.red*0.7, self.green*0.7, self.blue*0.7)
 		glVertex3f( 1.0,-1.0,-1.0)
 		glVertex3f(-1.0,-1.0,-1.0)
 		glVertex3f(-1.0, 1.0,-1.0)
@@ -85,10 +91,11 @@ class gamePiece(object):
 		self.green = g
 		self.blue  = b
 		self.rad = rad/100
-		self.x = (x)/100-4
-		self.y = (y)/100-5
+		self.x = (x)/120 + 0.2
+		self.y = -(y)/120 -1.4
 		self.z = -5
 		self.selected = False
+		print self.x, x, self.y, y
 
 
 
@@ -112,13 +119,11 @@ class gamePiece(object):
 
 		glPushMatrix()
 		if(self.selected):
-			glColor3f(self.red*0.9, self.green*0.9, self.blue)
+			glColor3f(float(self.red)/355, float(self.green)/355, float(self.blue)/355)
 		else:
-			glColor3f(self.red*0.7, self.green*0.7, self.blue*0.7)
+			glColor3f(float(self.red)/255, float(self.green)/255, float(self.blue)/255)
 
-		print(self.x, self.y, self.z)
 		glTranslatef(self.x, self.y, self.z)
-		#glTranslatef(0.0, 5.0, -1.0)
 		glScalef(1.0, 1.0, 2.0)
 		quadratic = gluNewQuadric()
 		gluDisk(quadratic,0,.34,32,32)
@@ -132,20 +137,16 @@ board = [[(square(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)) for x in range(B)] for y in ran
 # Inits the board tiles, with posistion and color.
 def makeBoard():
 	y = 0
-	odd = False
+	odd = True
 	for i in range(H):
 		odd = not(odd)
-		x = -int(B/2)
-
 		for j in range(B):
-			board[i][j].x = x
+			board[i][j].x = j
 			board[i][j].y = y
-			if (x + int(odd)) % 2  == 0:
+			if (j + int(odd)) % 2  == 0:
 				board[i][j].blue = 1.0
 			else:
 				board[i][j].red = 1.0
-			x += 1
-
 		y -= 1
 
 
@@ -213,6 +214,9 @@ def findPiece(x,y):
 			return gamePieces[i]
 
 def mouse(button, state,  x,  y):
+	transformedX = (x)/120
+	transformedY = -(y)/120
+	print transformedX, transformedY
 	global SELECTEDPIECE
 	if(button == 0 and state == 1):
 		piece = findPiece(x,y)
@@ -246,11 +250,12 @@ if __name__ == "__main__":
 	model = glGetDoublev(GL_MODELVIEW_MATRIX)
 	glMatrixMode(GL_MODELVIEW)
 	glRotatef(-90.0, 0.0, 0.0, 0.0)
-	glTranslatef(.5, 11.2, 1.0)
+	glTranslatef(-3.5, 11.2, 1.0)
 	# add three initial random planes
 	# start event processing */
 	#Create the board
 	makeBoard()
 	for i in range(len(pieces)):
 		gamePieces.append(gamePiece(pieces[i][0],pieces[i][1],pieces[i][2],pieces[i][3],pieces[i][4],pieces[i][5]))
+	print len(pieces)
 	glutMainLoop()
