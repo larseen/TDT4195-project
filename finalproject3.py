@@ -84,7 +84,7 @@ class gamePiece(object):
 		self.blue  = b
 		self.rad = rad
 		self.x = .4
-		self.y = -3.9
+		self.y = -8.9
 		self.z = -4
 		self.selected = False
 
@@ -111,11 +111,13 @@ class gamePiece(object):
 		else:
 			glColor3f(0.0, 0.0, 0.0)
 
+		
 		glTranslatef(self.x, self.y, self.z)
 		glTranslatef(0.0, 5.0, -1.0)
 		glScalef(1.0, 1.0, 2.0)
 		quadratic = gluNewQuadric()
-		gluDisk(quadratic,0,.35,32,32)
+		gluDisk(quadratic,0,.34,32,32)
+		gluCylinder(quadratic,.34,.34,0.1,200,200)
 		glPopMatrix()
 
 # create list of planes
